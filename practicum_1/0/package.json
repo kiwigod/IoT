@@ -1,0 +1,29 @@
+{
+  "name": "hello_world",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Arjun Sardjoe Missier",
+  "license": "ISC",
+  "dependencies": {
+    "npm": "^6.7.0"
+  },
+  "devDependencies": {},
+  "description": "practicum_1_opdracht_0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kiwigod/IoT.git"
+  },
+  "keywords": [
+    "IoT",
+    "Delft",
+    "HHS"
+  ],
+  "bugs": {
+    "url": "https://github.com/kiwigod/IoT/issues"
+  },
+  "homepage": "https://github.com/kiwigod/IoT#readme"
+}
