@@ -20,7 +20,10 @@ server.on('request', (req, res) => {
             break;
         case '/cars':
             if (!isEmpty(route.query)) applyFilterOnDataset(route.query, cars, res);
-            else res.end(JSON.stringify(cars));
+            else {
+                res.writeHead(200, {'Content-Type' : 'application/json'});
+                res.end(JSON.stringify(cars));
+            }
             break;
         default:
             home(req, res, route.query.name);
