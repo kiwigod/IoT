@@ -2,14 +2,14 @@
 const mqtt = require('mqtt');
 
 // Constants
-const PORT = 8080;
+const prefix = generateId();
 const client = mqtt.connect('mqtt://broker.mqttdashboard.com');
 const client2 = mqtt.connect('mqtt://broker.mqttdashboard.com');
 
 client.on('connect', () => {
 //    client.subscribe('number');
-    client.subscribe('weather');
-    client2.subscribe('weather');
+    client.subscribe(prefix + 'weather');
+    client2.subscribe(prefix + 'weather');
 });
 
 client.on('message', (topic, message) => {
@@ -27,10 +27,20 @@ function publishRandomNumber() {
 
 function publishWeather() {
     var weather = {
-        'city' : 'Deflt',
+        'city' : 'Delft',
         'temp' : Math.floor((Math.random() * 30) + 1)
     };
-    client.publish('weather', JSON.stringify(weather));
+    client.publish(prefix + 'weather', JSON.stringify(weather));
+}
+
+function generateId() {
+    var id = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    for (var i = 0; i < 5; i++)
+        id += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return id;
 }
 
 setInterval(() => {
