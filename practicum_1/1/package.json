@@ -21,7 +21,5 @@
     "url": "https://github.com/kiwigod/IoT/issues"
   },
   "homepage": "https://github.com/kiwigod/IoT#readme",
-  "dependencies": {
-    "ejs": "^2.6.1"
-  }
+  "dependencies": {}
 }
