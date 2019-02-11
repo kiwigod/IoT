@@ -1,0 +1,20 @@
+[
+    {
+        "manufacture" : "Ford",
+        "model" : "Mondeo",
+        "engine" : "inline",
+        "year" : 2002
+    },
+    {
+        "manufacture" : "BMW",
+        "model" : "320i",
+        "engine" : "inline",
+        "year" : 2013
+    },
+    {
+        "manufacture" : "Subaru",
+        "model" : "Legacy",
+        "engine" : "boxer",
+        "year" : 2000
+    }
+]
