@@ -1,0 +1,57 @@
+#!/usr/bin/node
+
+var Protocol = require('azure-iot-device-mqtt').Mqtt;
+var Client = require('azure-iot-device').Client;
+var Message = require('azure-iot-device').Message;
+
+// String containing Hostname, Device Id & Device Key in the following formats:
+//  "HostName=<iothub_host_name>;DeviceId=<device_id>;SharedAccessKey=<device_key>"
+var hostName = 'HostName=gmdelftiotpracticum.azure-devices.net;';
+var sensor_1 = hostName + 'DeviceId=device-studentB-5-device-1;SharedAccessKey=HLmXSol/8R8DmKKtnvgU4/N9+hU+62/q781RxnyhwwI=';
+var sensor_2 = hostName + 'DeviceId=device-studentB-5-device-2;SharedAccessKey=5M65Ekksv1Aqlp19bkrq4zYp6gpvSigcx751EVBRmxI=';
+var alarm = hostName + 'DeviceId=device-studentB-5-device-3;SharedAccessKey=YDBEnjNe2xuYgJ9UaMZKF0uXabDn7wT6QEUYyQW/cY4=';
+var lamp = hostName + 'DeviceId=device-studentB-5-device-4;SharedAccessKey=pDNhlVAOb50pFemG/90ED6aDmf7way6NViHpNDsYW5k=';
+
+sensor_1 = Client.fromConnectionString(sensor_1, Protocol);
+sensor_2 = Client.fromConnectionString(sensor_2, Protocol);
+alarm = Client.fromConnectionString(alarm, Protocol);
+lamp = Client.fromConnectionString(lamp, Protocol);
+
+sensor_1.open(() => {
+    setInterval(function () {
+        var motion = Math.random();
+        var data = JSON.stringify({ deviceId: 'sensor_studentB_5_1', motion: motion });
+        var message = new Message(data);
+        message.properties.add('motionAlert', true);
+        console.log('Sending message: ' + message.getData());
+        sensor_1.sendEvent(message, printResultFor('send'));
+    }, 2500);
+});
+sensor_2.open(() => {
+    setInterval(function () {
+        var motion = Math.random();
+        var data = JSON.stringify({ deviceId: 'sensor_studentB_5_2', motion: motion });
+        var message = new Message(data);
+        message.properties.add('motionAlert', true);
+        console.log('Sending message: ' + message.getData());
+        sensor_2.sendEvent(message, printResultFor('send'));
+    }, 2500);
+});
+alarm.open(() => {
+    alarm.on('message', (msg) => {
+        console.log(msg.data.toString());
+    });
+});
+lamp.open(() => {
+    lamp.on('message', (msg) => {
+        console.log(msg.data.toString());
+    });
+});
+
+function printResultFor(op) {
+    return function printResult(err, res) {
+        if (err) console.log(op + ' error: ' + err.toString());
+        if (res) console.log(op + ' status: ' + res.constructor.name);
+    };
+}
+
