@@ -24,17 +24,37 @@ var motionAlert_2 = false;
 
 var printMessage = function (message) {
     var device = message.body.deviceId;
+
     if (device === sensor_1) {
         console.log(device + ': ' + message.applicationProperties.motionAlert)
-        if (!motionAlert_1 && message.applicationProperties.motionAlert)
+        if (!motionAlert_1 && Boolean(message.applicationProperties.motionAlert))
             motionAlert_1 = true;
     }
 
     else if (device === sensor_2) {
         console.log(device + ': ' + message.applicationProperties.motionAlert)
-        if (!motionAlert_2 && message.applicationProperties.motionAlert)
+        if (!motionAlert_2 && Boolean(message.applicationProperties.motionAlert))
             motionAlert_2 = true;
     }
+
+    else if (device === alarm_device || device === light_device) {
+        motionAlert_1 = message.body.alarm;
+        motionAlert_2 = message.body.alarm;
+        // if (!message.body.alarm) {
+        //     motionAlert_1 = false;
+        //     motionAlert_2 = false;
+        // }
+    }
+
+    // else if (device === 'device-studentB-4-device-1') {
+    //     if (!motionAlert_1 && message.body.motionDetected)
+    //         motionAlert_1 = true;
+    // }
+
+    // else if (device === 'device-studentB-4-device-2') {
+    //     if (!motionAlert_2 && message.body.motionDetected)
+    //         motionAlert_2 = true;
+    // }
 };
 
 // Connect to the partitions on the IoT Hub's Event Hubs-compatible endpoint.
@@ -50,35 +70,21 @@ EventHubClient.createFromIotHubConnectionString(connectionString).then(function 
     });
 }).catch(printError);
 
-
-function printResultFor(op) {
-    return function printResult(err, res) {
-        if (err) console.log(op + ' error: ' + err.toString());
-        if (res) console.log(op + ' status: ' + res.constructor.name);
-    };
-}
-
 setInterval(() => {
     if (motionAlert_1 && motionAlert_2) {
-        console.log('Alarm aan');
         alarm.open((err) => {
             if (err)
                 console.error('Could not connect: ' + err.message);
             else {
                 var data = {deviceId: alarm_device, alarm: true};
                 var message = new Message(JSON.stringify(data));
-                console.log('Sending message: ' + message.getData());
-                alarm.send('device-studentB-5-device-3', message, printResultFor('send'));
+                alarm.send('device-studentB-5-device-3', message);
                 data.deviceId = light_device;
                 message = new Message(JSON.stringify(data));
-                alarm.send('device-studentB-5-device-4', message, printResultFor('send'));
+                alarm.send('device-studentB-5-device-4', message);
             }
         });
-
     }
     else console.log('Alarm niet afgegaan');
-
-    motionAlert_1 = false;
-    motionAlert_2 = false;
 }, 5000);
 

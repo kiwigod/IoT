@@ -20,9 +20,9 @@ lamp = Client.fromConnectionString(lamp, Protocol);
 sensor_1.open(() => {
     setInterval(function () {
         var motion = Math.random();
-        var data = JSON.stringify({ deviceId: 'sensor_studentB_5_1', motion: motion });
+        var data = JSON.stringify({ deviceId: 'sensor_studentB_5_1', motion: motion, room: 'yoink'});
         var message = new Message(data);
-        message.properties.add('motionAlert', true);
+        message.properties.add('motionAlert', (motion >= 0.5) ? true : false);
         console.log('Sending message: ' + message.getData());
         sensor_1.sendEvent(message, printResultFor('send'));
     }, 2500);
@@ -30,21 +30,33 @@ sensor_1.open(() => {
 sensor_2.open(() => {
     setInterval(function () {
         var motion = Math.random();
-        var data = JSON.stringify({ deviceId: 'sensor_studentB_5_2', motion: motion });
+        var data = JSON.stringify({ deviceId: 'sensor_studentB_5_2', motion: motion, room: 'yoink'});
         var message = new Message(data);
-        message.properties.add('motionAlert', true);
+        message.properties.add('motionAlert', (motion >= 0.5) ? true : false);
         console.log('Sending message: ' + message.getData());
         sensor_2.sendEvent(message, printResultFor('send'));
     }, 2500);
 });
 alarm.open(() => {
     alarm.on('message', (msg) => {
-        console.log(msg.data.toString());
+        msg = JSON.parse(msg.getData());
+        if (msg.alarm) {
+            console.log('Alarm on');
+            alarm.sendEvent(new Message(JSON.stringify({deviceId: 'alarm_studentB_5', alarm: false}), printResultFor('send')));
+        }
+        else
+            console.log('Alarm off');
     });
 });
 lamp.open(() => {
     lamp.on('message', (msg) => {
-        console.log(msg.data.toString());
+        msg = JSON.parse(msg.getData());
+        if (msg.alarm) {
+            console.log('Lamp on');
+            lamp.sendEvent(new Message(JSON.stringify({deviceId: 'light_studentB_5', alarm: false}), printResultFor('send')));
+        }
+        else
+            console.log('Lamp off');
     });
 });
 
