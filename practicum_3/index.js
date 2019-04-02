@@ -2,9 +2,12 @@
 
 const http = require('http');
 const url = require('url');
+const Client = require('azure-iothub').Client;
 
 const PORT = 8080;
 const AUTH = 'me0w';
+const connectionString = 'HostName=gmdelftiotpracticum.azure-devices.net;SharedAccessKeyName=service;SharedAccessKey=TIJxaNj/GJkVuJavJDv5RcH9bEbWye0jDURSp3yVp3w=';
+const azureServer = Client.fromConnectionString(connectionString);
 
 var dataset = [
     {
@@ -24,6 +27,7 @@ var dataset = [
     }
 ];
 dataset[1] = {'id': '1', 'naam': 'meow', 'description': 'YEEEEEEEe'};
+var alarm = false;
 
 server = http.createServer();
 server.on('request', (req, res) => {
@@ -58,6 +62,9 @@ server.on('request', (req, res) => {
     }
     else if (req.method === 'DELETE' && route.pathname === '/del') {
         deleteDevice(res, route.query.id);
+    }
+    else if (req.method === 'GET' && route.pathname === '/alarm') {
+        controlAlarm(res);
     }
 });
 
@@ -147,6 +154,18 @@ function deleteDevice(res, id) {
         return true;
     });
     console.log(dataset);
+}
+
+function controlAlarm(res) {
+    azureServer.invokeDeviceMethod('device-studentB-5-device-1', {methodName: (alarm ? 'DisableAlarm' : 'EnableAlarm')}, (err, result) => {
+        if (err) {
+            console.log('Failed to execute method: ' + err.message);
+        } else {
+            console.log('Response: ' + JSON.stringify(result));
+            res.end(result.payload);
+            alarm = !alarm;
+        }
+    });
 }
 
 server.listen(PORT, () => {
